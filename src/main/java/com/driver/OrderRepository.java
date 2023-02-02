@@ -56,11 +56,11 @@ public class OrderRepository {
 
 	public Integer getOrderCountByPartnerId(String partnerId) {
 		DeliveryPartner deliveryPartner = deliveryPartnerDb.get(partnerId);
-//		if(orderDeliveryPartnerDb.containsKey(deliveryPartner)){
-//			return orderDeliveryPartnerDb.get(deliveryPartner).size();
-//		}
-//		return 0;
-		return deliveryPartner.getNumberOfOrders();
+		if(orderDeliveryPartnerDb.containsKey(deliveryPartner)){
+			return orderDeliveryPartnerDb.get(deliveryPartner).size();
+		}
+		return 0;
+		//return deliveryPartner.getNumberOfOrders();
 	}
 
 	public List<String> getAllOrders() {
