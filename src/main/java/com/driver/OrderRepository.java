@@ -34,15 +34,31 @@ public class OrderRepository {
 	}
 
 	public void addOrderPartnerPair(String orderId, String partnerId) {
-//		Order order = orderDb.get(orderId);
 //		DeliveryPartner deliveryPartner = deliveryPartnerDb.get(partnerId);
-		if(orderDeliveryPartnerDb.containsKey(partnerId)) {
-			orderDeliveryPartnerDb.get(partnerId).add(orderId);
-			return;
+//		if(orderDeliveryPartnerDb.containsKey(partnerId)) {
+//			if(orderDeliveryPartnerDb.get(partnerId).contains(orderId))
+//				return;
+//			orderDeliveryPartnerDb.get(partnerId).add(orderId);
+//			deliveryPartner.setNumberOfOrders(orderDeliveryPartnerDb.get(partnerId).size());
+//			return;
+//		}
+//		List<String> orders = new ArrayList<>();
+//		orders.add(orderId);
+//		orderDeliveryPartnerDb.put(partnerId, orders);
+//		deliveryPartner.setNumberOfOrders(1);
+		if(!orderDeliveryPartnerDb.containsKey(partnerId)){
+			orderDeliveryPartnerDb.put(partnerId,new ArrayList<>());
 		}
-		List<String> orders = new ArrayList<>();
-		orders.add(orderId);
-		orderDeliveryPartnerDb.put(partnerId, orders);
+
+		//If already order is present
+		for(String s:orderDeliveryPartnerDb.get(partnerId)){
+			if(s.equals(orderId)){
+				return;
+			}
+		}
+		orderDeliveryPartnerDb.get(partnerId).add(orderId);
+		DeliveryPartner deliveryPartner = deliveryPartnerDb.get(partnerId);
+		deliveryPartner.setNumberOfOrders(orderDeliveryPartnerDb.get(partnerId).size());
 	}
 
 	public Order getOrderById(String orderId) {
@@ -75,13 +91,15 @@ public class OrderRepository {
 	public Integer getCountOfUnassignedOrders() {
 		int countOfOrdersAssigned = 0;
 		for(List<String> orderCount : orderDeliveryPartnerDb.values()){
-			countOfOrdersAssigned += orderCount.size();
+			countOfOrdersAssigned = countOfOrdersAssigned + orderCount.size();
 		}
-		return orderDb.size() - countOfOrdersAssigned;
+		return (orderDb.size() - countOfOrdersAssigned);
 	}
 
 	public Integer getOrdersLeftAfterGivenTimeByPartnerId(String time, String partnerId) {
-		int Time = Integer.valueOf(time.substring(0,2))*60 + Integer.valueOf(time.substring(3));
+		String[] s = time.split(":");
+		int Time=Integer.parseInt(s[0])*60+Integer.parseInt(s[1]);
+		//int Time = Integer.valueOf(time.substring(0,2))*60 + Integer.valueOf(time.substring(3));
 		int count = 0;
 		if(orderDeliveryPartnerDb.containsKey(partnerId)){
 			for(String orderId : orderDeliveryPartnerDb.get(partnerId)){
@@ -110,8 +128,8 @@ public class OrderRepository {
 
 	public void deletePartnerById(String partnerId) {
 		deliveryPartnerDb.remove(partnerId);
-		DeliveryPartner deliveryPartner = deliveryPartnerDb.get(partnerId);
-		orderDeliveryPartnerDb.remove(deliveryPartner);
+		//DeliveryPartner deliveryPartner = deliveryPartnerDb.get(partnerId);
+		orderDeliveryPartnerDb.remove(partnerId);
 	}
 
 	public void deleteOrderById(String orderId) {
@@ -120,8 +138,8 @@ public class OrderRepository {
 		for(String deliveryPartner : orderDeliveryPartnerDb.keySet()){
 			for(String order : orderDeliveryPartnerDb.get(deliveryPartner)){
 				if(order == orderId){
-					orderDeliveryPartnerDb.get(deliveryPartner).remove(order);
-					deliveryPartnerDb.remove(deliveryPartner);
+					orderDeliveryPartnerDb.remove(deliveryPartner);
+					//deliveryPartnerDb.remove(deliveryPartner);
 					break outer;
 				}
 			}
